@@ -1,43 +1,142 @@
-// Online C compiler to run C program online
 #include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <time.h>
 
-// Gerando e Listando Matrix do Tabuleiro
-void generateMatrix(int matrix[3][3]) {
+struct menu {
+    char name[20];
+};
+
+struct menu options[4];
+
+void listMenu() {
+    strcpy(options[1].name, "Jogador vs Jogador"); 
+    strcpy(options[2].name, "Maquina vs Jogador"); 
+    strcpy(options[3].name, "Maquina vs Maquina"); 
+    strcpy(options[0].name, "Sair");
+
+    for(int i=1; i<4; i++)
+        printf("\n| %i | %s", i, options[i].name);
+
+    printf("\n| %i | %s", 0, options[0].name);
+}
+
+int getGameMode() {
+    int choice;
+    printf("Escolha o modo de jogo:\n");
+    listMenu();
+
+    printf("\n\nDigite: ");
+    scanf("%i", &choice);
+
+    return choice;
+}
+
+// -------------------------------------
+
+struct player {
+    char name[5];
+    int points;
+};
+
+struct player pts_X    = {"X", 0};
+struct player pts_O    = {"O", 0};
+struct player pts_Draw = {"Draw", 0};
+
+int playerTurn;
+int changePlayerTurn() {
+    playerTurn = !playerTurn;
+    return playerTurn;
+}
+
+// -------------------------------------
+
+void generateBoard(char matrix[3][3]) {
     for(int i=0; i<3; i++){
         for(int j=0; j<3; j++){
-            matrix[i][j] = 0;
+            matrix[i][j] = '_';
         }
     }
 }
 
-void listMatrix(int matrix[3][3]) {
+void listBoard(char matrix[3][3]) {
     for(int i=0; i<3; i++){
         for(int j=0; j<3; j++){
-            printf("%i ", matrix[i][j]);
+            printf("%c ", matrix[i][j]);
         }
         printf("\n");
     }
+    printf("------\n");
 }
 
-// Pedindo Jogadas e Atualizando o Tabuleiro
-int updateMatrix(int matrix[3][3]){
-    // Requests
-    int x, y;
-    printf("Digite as coordenadas da posição = ");
-    scanf("%i %i", &x, &y);
+struct coordinates {
+    int x;
+    int y;
+};
 
-    matrix[x][y] = 1;
-    listMatrix(matrix);
+struct coordinates getPlayCoordinates(int isBotPlayer){
+    int x, y;
+
+    if(isBotPlayer) {
+        x = rand() % 3;
+        y = rand() % 3;
+    } else {
+        printf("Insira as coordenadas da jogada (x, y) separadas por um espaco: ");
+        scanf("%i %i", &x, &y);
+    }
+
+    struct coordinates move = {x, y};
+    return move;
+}
+
+void updateBoard(char matrix[3][3], struct coordinates move, int player) {
+    matrix[move.x][move.y] = (player) ? 'X' : 'O';
+    listBoard(matrix);
+}
+
+// -------------------------------------
+
+int startGame(int type) {
+    char board[3][3];
+    int numOfMoves = 0;
+    int player = changePlayerTurn();
+    int isBot = false;
+    generateBoard(board);
+
+    while(numOfMoves < 9 ) {
+
+        if(type == 2) {
+            isBot = (player) ? true : false;
+        } else if (type == 3) {
+            isBot = true;
+        }
+
+        struct coordinates move = getPlayCoordinates(isBot);
+        if(board[move.x][move.y] == '_') {
+            updateBoard(board, move, player);
+            player = changePlayerTurn();
+            numOfMoves++;
+        }
+    }
     return 0;
 }
 
+// -------------------------------------
+
 int main() {
-    int board[3][3];
+    srand(time(NULL));
+    int gamemode;
+    while(true) {
+        gamemode = getGameMode();
+        printf("\n%s\n", options[gamemode].name);
 
-    generateMatrix(board);
-    listMatrix(board);
+        if (gamemode == 0){
+            break;
+        }
 
-    updateMatrix(board);
+        startGame(gamemode);
+    }
 
     return 0;
 }
