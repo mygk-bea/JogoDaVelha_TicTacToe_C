@@ -95,6 +95,24 @@ void updateBoard(char matrix[3][3], struct coordinates move, int player) {
     listBoard(matrix);
 }
 
+int checkWinnerExists(char matrix[3][3]){
+    for(int i=0; i<3; i++){
+        int row = 0;
+        for(int j=0; j<3; j++){
+            char element[2] = { matrix[i][j] };
+            if(strcmp(element, "X") == 0){
+                row++;
+            }else if (strcmp(element, "O") == 0){
+                row--;
+            }   
+        }
+        if(row == 3 || row == -3) {
+            printf("valor linha = %i\n\n", row);
+        }
+    }
+    return 0;
+}
+
 // -------------------------------------
 
 int startGame(int type) {
@@ -103,11 +121,12 @@ int startGame(int type) {
     int player = changePlayerTurn();
     int isBot = false;
     generateBoard(board);
+    listBoard(board);
 
     while(numOfMoves < 9 ) {
 
         if(type == 2) {
-            isBot = (player) ? true : false;
+            isBot = (player) ? false : true;
         } else if (type == 3) {
             isBot = true;
         }
@@ -118,6 +137,8 @@ int startGame(int type) {
             player = changePlayerTurn();
             numOfMoves++;
         }
+
+        checkWinnerExists(board);
     }
     return 0;
 }
