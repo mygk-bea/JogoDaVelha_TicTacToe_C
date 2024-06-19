@@ -67,7 +67,7 @@ void listBoard(char matrix[3][3]) {
         }
         printf("\n");
     }
-    printf("------\n");
+    printf("\n");
 }
 
 struct coordinates {
@@ -95,22 +95,27 @@ void updateBoard(char matrix[3][3], struct coordinates move, int player) {
     listBoard(matrix);
 }
 
-int checkWinnerExists(char matrix[3][3]){
+char checkWinnerExists(char matrix[3][3]){
     for(int i=0; i<3; i++){
-        int row = 0;
+        char row[4] = "", col[4] = "", mainDiag[4] = "";
         for(int j=0; j<3; j++){
-            char element[2] = { matrix[i][j] };
-            if(strcmp(element, "X") == 0){
-                row++;
-            }else if (strcmp(element, "O") == 0){
-                row--;
-            }   
+            char rowElement[2] = { matrix[i][j] };
+            char colElement[2] = { matrix[j][i] };
+            char mainDiagElement[2] = { matrix[i][i] };
+
+            strcat(row, rowElement);
+            strcat(col, colElement);
+            strcat(mainDiag, mainDiagElement);
         }
-        if(row == 3 || row == -3) {
-            printf("valor linha = %i\n\n", row);
+        
+        if(strcmp(row, "XXX") == 0 || strcmp(col, "XXX") == 0){
+            return 'X';
+        } else if(strcmp(row, "OOO") == 0 || strcmp(col, "OOO") == 0){
+            return 'O';
         }
+
     }
-    return 0;
+    return '_';
 }
 
 // -------------------------------------
@@ -123,7 +128,7 @@ int startGame(int type) {
     generateBoard(board);
     listBoard(board);
 
-    while(numOfMoves < 9 ) {
+    while(checkWinnerExists(board) == '_') {
 
         if(type == 2) {
             isBot = (player) ? false : true;
