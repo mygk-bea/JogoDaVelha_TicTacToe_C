@@ -137,6 +137,8 @@ int startGame(int type) {
             if(numOfMoves == 9 && !winner) {
                 winner = 3;
             }
+        } else if(board[move.x][move.y] != '_' && isBot == false) {
+            printf("\nJogada Invalida. Tente novamente em um campo vazio.\n");
         }
     }
     return winner;
@@ -164,8 +166,8 @@ int main() {
 
         int result = startGame(gamemode);
         p_pts[result].points++;
-
         printf("\nVencedor: * %s *", p_pts[result].name);
+
         printf("\n+-----+--------+-----+");
         printf("\n|  X  | EMPATE |  O  |");
         printf("\n+-----+--------+-----+");
